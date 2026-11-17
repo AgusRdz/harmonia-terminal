@@ -4,6 +4,7 @@
   "description": "Harmonia theme for Windows Terminal and PowerShell",
   "type": "module",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "build": "node src/build.js",
     "preview": "node scripts/preview.js"
