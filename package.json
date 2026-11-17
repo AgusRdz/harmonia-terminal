@@ -1,0 +1,14 @@
+{
+  "name": "harmonia-terminal",
+  "version": "1.0.0",
+  "description": "Harmonia theme for Windows Terminal and PowerShell",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "node src/build.js",
+    "preview": "node scripts/preview.js"
+  },
+  "dependencies": {
+    "harmonia-theme": "github:AgusRdz/harmonia-theme#8efb01fb6497a87f4226a29d0234679718b1ec0f"
+  }
+}
