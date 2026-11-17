@@ -1,0 +1,13 @@
+[metadata]
+name = "Harmonia Daybreak"
+
+[colors]
+foreground = "#2d2d2d"
+background = "#eceef1"
+cursor_bg = "#2d2d2d"
+cursor_border = "#2d2d2d"
+cursor_fg = "#eceef1"
+selection_bg = "#d5dbe6"
+selection_fg = "#2d2d2d"
+ansi = ["#9fa6b2", "#c8323b", "#3c7944", "#8e642c", "#386cb5", "#9b43c6", "#2a70a9", "#3a3a3a"]
+brights = ["#666d75", "#a52930", "#2a6439", "#785030", "#2f5b8a", "#8133a9", "#355991", "#1f1f1f"]

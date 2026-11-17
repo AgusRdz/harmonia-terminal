@@ -1,0 +1,13 @@
+[metadata]
+name = "Harmonia Dark High Contrast"
+
+[colors]
+foreground = "#ececf4"
+background = "#0b0c12"
+cursor_bg = "#ececf4"
+cursor_border = "#ececf4"
+cursor_fg = "#0b0c12"
+selection_bg = "#354270"
+selection_fg = "#ececf4"
+ansi = ["#252735", "#ff7e8a", "#98e8b0", "#f0be79", "#74c0ff", "#d08cff", "#79d4d2", "#ececf4"]
+brights = ["#7c82a3", "#ffa1aa", "#c0f1c0", "#ffd793", "#a8d8ff", "#e7b7ff", "#b6f2f5", "#ffffff"]

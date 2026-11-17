@@ -1,0 +1,13 @@
+[metadata]
+name = "Harmonia Paper White"
+
+[colors]
+foreground = "#1a1a1a"
+background = "#ffffff"
+cursor_bg = "#1a1a1a"
+cursor_border = "#1a1a1a"
+cursor_fg = "#ffffff"
+selection_bg = "#e0e7f0"
+selection_fg = "#1a1a1a"
+ansi = ["#9fa6b2", "#d0444c", "#42844b", "#9a6d30", "#2e7bba", "#a353cb", "#358181", "#2d2d2d"]
+brights = ["#70777f", "#b82e35", "#2f6f40", "#865936", "#3b63a0", "#9039bc", "#316b75", "#1a1a1a"]

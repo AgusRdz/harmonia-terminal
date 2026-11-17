@@ -1,0 +1,13 @@
+[metadata]
+name = "Harmonia OLED True Black"
+
+[colors]
+foreground = "#e2e2e8"
+background = "#000000"
+cursor_bg = "#e2e2e8"
+cursor_border = "#e2e2e8"
+cursor_fg = "#000000"
+selection_bg = "#111e2b"
+selection_fg = "#e2e2e8"
+ansi = ["#111218", "#e8848a", "#a7deae", "#e1b37a", "#7aa2f7", "#c5a6f2", "#96d7d4", "#d6d6de"]
+brights = ["#6e738f", "#f0a2a6", "#bee9c3", "#f0c894", "#9cc0ff", "#d7bdf8", "#b3e4e1", "#ffffff"]

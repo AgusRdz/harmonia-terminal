@@ -1,0 +1,13 @@
+[metadata]
+name = "Harmonia Noir"
+
+[colors]
+foreground = "#d0d0e0"
+background = "#14121a"
+cursor_bg = "#d0d0e0"
+cursor_border = "#d0d0e0"
+cursor_fg = "#14121a"
+selection_bg = "#2b2440"
+selection_fg = "#d0d0e0"
+ansi = ["#2a2b36", "#ec7279", "#9fd6d1", "#d4aa76", "#7ea8e6", "#bba0f5", "#88c6c3", "#d0d0e0"]
+brights = ["#767c98", "#ec8a8f", "#a8e0db", "#e3bb86", "#9cc7ff", "#caa7f2", "#a3dee0", "#ffffff"]
