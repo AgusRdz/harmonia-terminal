@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import { loadThemes } from './theme.js'
 import { generateWindowsTerminal } from './targets/windows-terminal.js'
+import { generateHerdr } from './targets/herdr.js'
 import { generatePowerShell } from './targets/powershell.js'
 import { generatePowerShellFormat } from './targets/powershell-format.js'
 import { checkContrast } from './contrast-check.js'
@@ -13,12 +14,14 @@ const themes = loadThemes()
 
 mkdirSync(join(dist, 'windows-terminal'), { recursive: true })
 mkdirSync(join(dist, 'powershell'), { recursive: true })
+mkdirSync(join(dist, 'herdr'), { recursive: true })
 
 writeFileSync(join(dist, 'windows-terminal', 'harmonia.json'), generateWindowsTerminal(themes))
 
 for (const theme of themes) {
   writeFileSync(join(dist, 'powershell', `${theme.slug}.ps1`), generatePowerShell(theme))
   writeFileSync(join(dist, 'powershell', `${theme.slug}.format.ps1xml`), generatePowerShellFormat(theme))
+  writeFileSync(join(dist, 'herdr', `${theme.slug}.json`), generateHerdr(theme))
 }
 
 try {

@@ -26,6 +26,14 @@ Write-Host "Installed Windows Terminal fragment to $fragmentDir"
 Write-Host "Installed $Variant to $configDir\harmonia.ps1"
 Write-Host "Installed $Variant file listing format to $configDir\harmonia.format.ps1xml"
 Write-Host "Installed oh-my-posh theme to $configDir\harmonia.omp.json"
+
+$herdrDir = Join-Path $HOME '.config\herdr-app'
+if (Test-Path $herdrDir) {
+  $herdrThemes = Join-Path $herdrDir 'themes'
+  New-Item -ItemType Directory -Path $herdrThemes -Force | Out-Null
+  Copy-Item -Path (Join-Path $PSScriptRoot 'dist\herdr\*.json') -Destination $herdrThemes -Force
+  Write-Host "Installed Herdr themes to $herdrThemes"
+}
 Write-Host ''
 Write-Host 'Add this line to your PowerShell profile ($PROFILE):'
 Write-Host '  . "$HOME\.config\harmonia\harmonia.ps1"'
@@ -34,3 +42,6 @@ Write-Host 'If you use oh-my-posh, point it at the theme:'
 Write-Host '  oh-my-posh init pwsh --config "$HOME\.config\harmonia\harmonia.omp.json" | Invoke-Expression'
 Write-Host ''
 Write-Host 'Then restart Windows Terminal and pick a Harmonia color scheme in Settings > Profiles > Appearance.'
+if (Test-Path $herdrDir) {
+  Write-Host 'In Herdr, pick a harmonia-* theme in Settings, or pair them in a layout: "theme": { "light": "harmonia-light", "dark": "harmonia-dark" }'
+}

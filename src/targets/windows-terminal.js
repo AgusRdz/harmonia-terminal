@@ -1,32 +1,21 @@
-import { color, toHex } from '../theme.js'
+import { toHex } from '../theme.js'
+import { terminalPalette } from '../palette.js'
 
-const ansi = {
-  black: 'Black',
-  red: 'Red',
-  green: 'Green',
-  yellow: 'Yellow',
-  blue: 'Blue',
-  purple: 'Magenta',
-  cyan: 'Cyan',
-  white: 'White'
-}
+const ansi = ['black', 'red', 'green', 'yellow', 'blue', 'purple', 'cyan', 'white']
 
 function scheme(theme) {
-  const hex = (key) => toHex(color(theme, key))
+  const palette = terminalPalette(theme)
   const result = {
     name: theme.name,
-    background: hex('editor.background'),
-    foreground: hex('editor.foreground'),
-    cursorColor: hex('terminalCursor.foreground'),
-    selectionBackground: hex('terminal.selectionBackground')
+    background: toHex(palette.background),
+    foreground: toHex(palette.foreground),
+    cursorColor: toHex(palette.cursor),
+    selectionBackground: toHex(palette.selection)
   }
-  for (const [key, suffix] of Object.entries(ansi)) {
-    result[key] = hex(`terminal.ansi${suffix}`)
-  }
-  for (const [key, suffix] of Object.entries(ansi)) {
-    const bright = `bright${key[0].toUpperCase()}${key.slice(1)}`
-    result[bright] = hex(`terminal.ansiBright${suffix}`)
-  }
+  ansi.forEach((key, i) => {
+    result[key] = toHex(palette.ansi[i])
+    result[`bright${key[0].toUpperCase()}${key.slice(1)}`] = toHex(palette.ansi[i + 8])
+  })
   return result
 }
 

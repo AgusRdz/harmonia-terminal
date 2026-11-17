@@ -22,7 +22,7 @@
           "style": "powerline",
           "powerline_symbol": "",
           "background": "blue",
-          "foreground": "black",
+          "foreground": "transparent",
           "options": {
             "style": "full",
             "folder_separator_icon": "/"
@@ -34,7 +34,7 @@
           "style": "powerline",
           "powerline_symbol": "",
           "background": "green",
-          "foreground": "black",
+          "foreground": "transparent",
           "template": " {{ .HEAD }} "
         },
         {
@@ -42,7 +42,7 @@
           "style": "powerline",
           "powerline_symbol": "",
           "background": "red",
-          "foreground": "black",
+          "foreground": "transparent",
           "template": "  {{ .Code }} "
         }
       ]

@@ -161,7 +161,8 @@ export function fitContrast(rgb, bg, min, max = Infinity) {
 
 export const tiers = {
   accent: { min: 7 },
-  quiet: { min: 4.5, max: 5.5 }
+  quiet: { min: 4.5, max: 5.5 },
+  aa: { min: 4.5 }
 }
 
 // Fits rgb to its tier and throws if the result still misses it, so a bad role fails the build
