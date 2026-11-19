@@ -202,13 +202,13 @@
 		<key>Alpha Component</key>
 		<real>1</real>
 		<key>Blue Component</key>
-		<real>1.0</real>
+		<real>0.92549</real>
 		<key>Color Space</key>
 		<string>sRGB</string>
 		<key>Green Component</key>
-		<real>1.0</real>
+		<real>0.92549</real>
 		<key>Red Component</key>
-		<real>1.0</real>
+		<real>0.929412</real>
 	</dict>
 	<key>Background Color</key>
 	<dict>

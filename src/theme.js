@@ -165,9 +165,11 @@ export const tiers = {
   aa: { min: 4.5 }
 }
 
-// Fits rgb to its tier and throws if the result still misses it, so a bad role fails the build
-export function toTier(theme, role, tier, rgb, bg) {
-  const { min, max = Infinity } = tiers[tier]
+// Fits rgb to its tier and throws if the result still misses it, so a bad role fails the build.
+// cap lowers the tier's ceiling, e.g. to keep a color from outshining normal text.
+export function toTier(theme, role, tier, rgb, bg, cap = Infinity) {
+  const min = tiers[tier].min
+  const max = Math.min(tiers[tier].max ?? Infinity, cap)
   const fitted = fitContrast(rgb, bg, min, max)
   const ratio = contrast(fitted, bg)
   if (ratio < min || ratio > max) {

@@ -30,7 +30,30 @@ The PowerShell scripts work in PowerShell 7 and Windows PowerShell 5.1; settings
 
 ## Install
 
-Script:
+Without cloning, run the install script straight from GitHub. It downloads the repo into a temporary folder, installs from there, and deletes it. The variant at the end is optional.
+
+```sh
+# macOS and Linux
+curl -fsSL https://raw.githubusercontent.com/AgusRdz/harmonia-terminal/main/install.sh | bash -s -- harmonia-dark
+```
+
+```powershell
+# Windows
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/AgusRdz/harmonia-terminal/main/install.ps1))) -Variant harmonia-dark
+```
+
+`uninstall.sh` and `uninstall.ps1` work the same way (drop the variant). Read a script before piping it into a shell; both are short. Run either again to update.
+
+To use the scripts from a clone, or to install by hand, clone the repo. The themes are already built in `dist/`, so there is nothing to compile.
+
+```sh
+git clone https://github.com/AgusRdz/harmonia-terminal.git
+cd harmonia-terminal
+```
+
+Every terminal gets all nine variants at once, and you pick one in its settings: `harmonia-dark`, `harmonia-light`, `harmonia-aurora`, `harmonia-daybreak`, `harmonia-moonlit`, `harmonia-paper-white`, `harmonia-noir`, `harmonia-dark-high-contrast`, `harmonia-oled-true-black`. WezTerm and Kitty list them by display name (`Harmonia Dark`). The PowerShell colors are the exception: they hold one variant at a time.
+
+### Windows
 
 ```powershell
 .\install.ps1 -Variant harmonia-dark
@@ -38,19 +61,74 @@ Script:
 
 It copies the fragment to `%LOCALAPPDATA%\Microsoft\Windows Terminal\Fragments\Harmonia\`, copies the chosen script to `~\.config\harmonia\harmonia.ps1` and its format file to `harmonia.format.ps1xml` beside it, copies the oh-my-posh theme to `~\.config\harmonia\harmonia.omp.json`, and prints the lines to add to `$PROFILE`. If `~\.config\herdr-app` exists it also copies all nine Herdr themes to its `themes\` folder. It does not edit your profile.
 
+```powershell
+.\uninstall.ps1
+```
+
+It removes the fragment, the files in `~\.config\harmonia\` and the Herdr themes this repo ships, then lists the lines in your PowerShell profiles and Windows Terminal settings that still point at Harmonia. It does not edit them.
+
+PSReadLine and `Get-ChildItem` colors are baked per variant, so when you switch the Windows Terminal scheme, run the script again with the matching `-Variant`. Normal text uses the terminal's default foreground, so nothing turns unreadable in the meantime.
+
 Manual:
 
 1. Copy `dist/windows-terminal/harmonia.json` into the Fragments folder above.
 2. Copy a `dist/powershell/harmonia-<variant>.ps1` somewhere stable, copy the matching `.format.ps1xml` next to it as `harmonia.format.ps1xml`, and add `. "<path>"` to `$PROFILE`.
 3. Restart Windows Terminal and select a Harmonia scheme in the profile's Appearance settings.
 4. For Herdr, copy `dist/herdr/*.json` into `~/.config/herdr-app/themes/` and pick a `harmonia-*` theme in its Settings. A layout can pair them with `"theme": { "light": "harmonia-light", "dark": "harmonia-dark" }`.
-5. For Ghostty, copy `dist/ghostty/*` into `~/.config/ghostty/themes/` and set `theme = harmonia-dark` (or `theme = light:harmonia-light,dark:harmonia-dark`).
-6. For iTerm2, import a `dist/iterm2/*.itermcolors` in Settings > Profiles > Colors > Color Presets > Import, then pick it from the same menu.
-7. For WezTerm, copy `dist/wezterm/*.toml` into `~/.config/wezterm/colors/` and set `config.color_scheme = 'Harmonia Dark'` (the scheme name inside the file).
-8. For Kitty, copy `dist/kitty/*.conf` into `~/.config/kitty/themes/`, then run `kitten themes` or add `include themes/harmonia-dark.conf` to `kitty.conf`.
-9. For Alacritty, copy `dist/alacritty/*.toml` into `~/.config/alacritty/themes/` (Windows: `%APPDATA%\alacritty\themes\`) and add `import = ["<themes folder>/harmonia-dark.toml"]` under `[general]` in `alacritty.toml`.
+5. For Alacritty, copy `dist/alacritty/*.toml` into `%APPDATA%\alacritty\themes\` and add `import = ["<themes folder>/harmonia-dark.toml"]` under `[general]` in `alacritty.toml`.
 
-PSReadLine and `Get-ChildItem` colors are baked per variant, so when you switch the Windows Terminal scheme, reinstall the matching variant too. Normal text uses the terminal's default foreground, so nothing turns unreadable in the meantime.
+### macOS and Linux
+
+```sh
+./install.sh harmonia-dark
+```
+
+The variant is optional (default `harmonia-dark`) and only changes the instructions it prints. For each of Ghostty, iTerm2 (macOS), WezTerm, Kitty, Alacritty and Herdr that it finds, it:
+
+- copies all nine themes and checks each copy against `dist/`;
+- for iTerm2, writes the nine color presets by name, so running it again updates them instead of adding copies;
+- for Kitty, refreshes `current-theme.conf` if `kitten themes` saved a Harmonia theme there;
+- for Ghostty, runs `ghostty +validate-config`;
+- reports `ok` when the terminal's config already uses Harmonia, or `todo` with the exact line to add. It does not edit your config files.
+
+Run it again after pulling an update, then reload each terminal. It exits with an error if any check fails.
+
+```sh
+./uninstall.sh
+```
+
+It removes only the files this repo ships and every `harmonia-*` iTerm2 preset, then lists the config lines that still point at Harmonia so you can change them.
+
+Manual:
+
+```sh
+# Ghostty: themes are only read from ~/.config/ghostty/themes, even when the
+# config file lives in ~/Library/Application Support/com.mitchellh.ghostty/config
+mkdir -p ~/.config/ghostty/themes && cp dist/ghostty/* ~/.config/ghostty/themes/
+mkdir -p ~/.config/wezterm/colors && cp dist/wezterm/*.toml ~/.config/wezterm/colors/
+mkdir -p ~/.config/kitty/themes && cp dist/kitty/*.conf ~/.config/kitty/themes/
+mkdir -p ~/.config/alacritty/themes && cp dist/alacritty/*.toml ~/.config/alacritty/themes/
+mkdir -p ~/.config/herdr-app/themes && cp dist/herdr/*.json ~/.config/herdr-app/themes/
+```
+
+Then select a variant and reload:
+
+| Terminal | Select | Reload |
+|---|---|---|
+| Ghostty | `theme = harmonia-dark` in the config (Ghostty > Settings…). `theme = light:harmonia-light,dark:harmonia-dark` follows the system appearance. | `Cmd+Shift+,` |
+| iTerm2 | `open dist/iterm2/harmonia-dark.itermcolors`, then pick it in Settings > Profiles > Colors > Color Presets. Opening the same file again adds a copy (`harmonia-dark (2)`); the script avoids that. | Pick the preset again; profiles keep a copy of the colors |
+| WezTerm | `config.color_scheme = 'Harmonia Dark'` in `~/.wezterm.lua` | `Cmd+R`, or reopen |
+| Kitty | `kitten themes`, User category. It saves a copy in `current-theme.conf`, so run it again after an update. Or `include themes/harmonia-dark.conf` in `kitty.conf`. | `Ctrl+Cmd+,` |
+| Alacritty | `import = ["~/.config/alacritty/themes/harmonia-dark.toml"]` under `[general]` in `~/.config/alacritty/alacritty.toml` | Reopen |
+| Herdr | A `harmonia-*` theme in its Settings | |
+
+### Check
+
+Print the 16 ANSI colors as text and compare them with the variant's screenshot. Color 0 (black) is meant to be nearly invisible on the background; it is used as a fill.
+
+```sh
+for i in {0..15}; do printf '\e[38;5;%sm%3s ' $i $i; [ $i = 7 ] && echo; done; printf '\e[0m\n'
+```
 
 ## Contrast
 
@@ -64,7 +142,7 @@ Every variant follows the same three-tier hierarchy, measured with WCAG contrast
 
 Colors that miss their tier are moved along OKLCH lightness, keeping their hue, so a few accents in the light variants are darker than in the editor. `npm run build` fails if any generated foreground drops below 4.5:1.
 
-The 16 ANSI colors follow the same rule against the background. Bright black is the usual dim text color (autosuggestions, comments), so it sits in the quiet tier. The other chromatic colors are also used as fills (prompt segments), so they only need AA, not 7:1. Black, white and bright white are left as designed, and the selection background is moved if the foreground would fall below 4.5:1 on it. The Ghostty, iTerm2, WezTerm, Kitty and Alacritty themes use the same adjusted palette. Herdr's `muted` and `dim` use the quiet tier; its accent and agent status colors, which render as text, use the accent tier.
+The 16 ANSI colors follow the same rule against the background. Bright black is the usual dim text color (autosuggestions, comments), so it sits in the quiet tier. The other chromatic colors are also used as fills (prompt segments), so they only need AA, not 7:1. No color, bright white included, has more contrast than normal text, so bright colors never glare above the foreground. Black and white are left as designed, and the selection background is moved if the foreground would fall below 4.5:1 on it. The Ghostty, iTerm2, WezTerm, Kitty and Alacritty themes use the same adjusted palette. Herdr's `muted` and `dim` use the quiet tier; its accent and agent status colors, which render as text, use the accent tier.
 
 ## Troubleshooting
 

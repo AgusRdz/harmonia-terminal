@@ -13,7 +13,7 @@
       "green": "#B0E3C5",
       "brightGreen": "#C1EED3",
       "yellow": "#F9D79F",
-      "brightYellow": "#FFE6B3",
+      "brightYellow": "#FDE4B2",
       "blue": "#A5D8F7",
       "brightBlue": "#B8E3FB",
       "purple": "#E8A2C8",
@@ -21,7 +21,7 @@
       "cyan": "#9FDDE3",
       "brightCyan": "#B4E9ED",
       "white": "#E8E8F0",
-      "brightWhite": "#FFFFFF"
+      "brightWhite": "#E7E6E6"
     },
     {
       "name": "Harmonia Dark",
@@ -34,7 +34,7 @@
       "red": "#EC7279",
       "brightRed": "#EC8A8F",
       "green": "#A3D9A5",
-      "brightGreen": "#B6E3B4",
+      "brightGreen": "#B0DCAE",
       "yellow": "#E0A96D",
       "brightYellow": "#F0C685",
       "blue": "#6EBDDB",
@@ -42,9 +42,9 @@
       "purple": "#C574DD",
       "brightPurple": "#D995ED",
       "cyan": "#88C6C3",
-      "brightCyan": "#A3DEE0",
+      "brightCyan": "#A1DBDE",
       "white": "#D0D0E0",
-      "brightWhite": "#FFFFFF"
+      "brightWhite": "#D1D1D1"
     },
     {
       "name": "Harmonia Dark High Contrast",
@@ -67,7 +67,7 @@
       "cyan": "#79D4D2",
       "brightCyan": "#B6F2F5",
       "white": "#ECECF4",
-      "brightWhite": "#FFFFFF"
+      "brightWhite": "#EDECEC"
     },
     {
       "name": "Harmonia Daybreak",
@@ -90,7 +90,7 @@
       "cyan": "#2A70A9",
       "brightCyan": "#355991",
       "white": "#3A3A3A",
-      "brightWhite": "#1F1F1F"
+      "brightWhite": "#2D2D2D"
     },
     {
       "name": "Harmonia Light",
@@ -126,7 +126,7 @@
       "red": "#EC7279",
       "brightRed": "#EC8A8F",
       "green": "#A3D9A5",
-      "brightGreen": "#B6E3B4",
+      "brightGreen": "#B0DCAE",
       "yellow": "#E0A96D",
       "brightYellow": "#F0C685",
       "blue": "#5B8FC7",
@@ -136,7 +136,7 @@
       "cyan": "#6EBBDD",
       "brightCyan": "#8BD4E9",
       "white": "#D0D0E0",
-      "brightWhite": "#FFFFFF"
+      "brightWhite": "#D1D1D1"
     },
     {
       "name": "Harmonia Noir",
@@ -149,7 +149,7 @@
       "red": "#EC7279",
       "brightRed": "#EC8A8F",
       "green": "#9FD6D1",
-      "brightGreen": "#A8E0DB",
+      "brightGreen": "#A4DBD7",
       "yellow": "#D4AA76",
       "brightYellow": "#E3BB86",
       "blue": "#7EA8E6",
@@ -157,9 +157,9 @@
       "purple": "#BBA0F5",
       "brightPurple": "#CAA7F2",
       "cyan": "#88C6C3",
-      "brightCyan": "#A3DEE0",
+      "brightCyan": "#A1DBDE",
       "white": "#D0D0E0",
-      "brightWhite": "#FFFFFF"
+      "brightWhite": "#D1D1D1"
     },
     {
       "name": "Harmonia OLED True Black",
@@ -182,7 +182,7 @@
       "cyan": "#96D7D4",
       "brightCyan": "#B3E4E1",
       "white": "#D6D6DE",
-      "brightWhite": "#FFFFFF"
+      "brightWhite": "#E3E2E2"
     },
     {
       "name": "Harmonia Paper White",
