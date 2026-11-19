@@ -110,6 +110,7 @@ Either way, every terminal gets all nine variants. The variant only changes the 
 
 - copies all nine themes and checks each copy against `dist/`;
 - for iTerm2 and Terminal.app, writes the nine color presets or profiles by name, so running it again updates them instead of adding copies;
+- for iTerm2, compares the default profile's colors with the presets, since profiles keep a copy of the colors rather than the preset name, and tells you to pick the preset again if the profile still has an older version;
 - for Kitty, refreshes `current-theme.conf` if `kitten themes` saved a Harmonia theme there;
 - for Ghostty, runs `ghostty +validate-config`;
 - reports `ok` when the terminal's config already uses Harmonia, or `todo` with the exact line to add. It does not edit your config files.
