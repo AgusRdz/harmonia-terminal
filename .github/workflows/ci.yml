@@ -1,0 +1,116 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      # package-lock.json resolves harmonia-theme over SSH; the runner has no key, and the repo is public
+      - run: git config --global url."https://github.com/".insteadOf ssh://git@github.com/
+      - run: npm ci
+      # Fails on a contrast regression
+      - run: npm run build
+      - run: npm run preview
+      - name: Generated files are committed
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git status --short
+            echo "dist/ or docs/preview.html is out of date: run npm run build and npm run preview, then commit."
+            exit 1
+          fi
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: shellcheck --severity=warning install.sh uninstall.sh
+      - name: PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          $issues = Invoke-ScriptAnalyzer -Path . -Recurse -Severity Error
+          $issues | Format-Table -AutoSize
+          if ($issues) { exit 1 }
+
+  unix:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      XDG_CONFIG_HOME: ${{ github.workspace }}/../config
+    steps:
+      - uses: actions/checkout@v5
+      # The runners have none of these terminals, so their config folders make the script install for them
+      - run: mkdir -p "$XDG_CONFIG_HOME"/{ghostty,wezterm,kitty,alacritty,herdr-app}
+      - run: ./install.sh harmonia-aurora
+      - name: Themes installed
+        run: |
+          for pair in ghostty/themes:ghostty wezterm/colors:wezterm kitty/themes:kitty alacritty/themes:alacritty herdr-app/themes:herdr; do
+            dest="$XDG_CONFIG_HOME/${pair%%:*}"
+            src="dist/${pair##*:}"
+            for f in "$src"/*; do cmp "$f" "$dest/$(basename "$f")"; done
+          done
+      - name: Terminal.app profiles installed
+        if: runner.os == 'macOS'
+        run: test "$(defaults export com.apple.Terminal - | plutil -extract 'Window Settings' raw -o - - | grep -c '^Harmonia ')" = 9
+      - name: Install again (updates in place)
+        run: ./install.sh
+      - run: ./uninstall.sh
+      - name: Themes removed
+        run: |
+          left="$(find "$XDG_CONFIG_HOME" -type f -name 'harmonia-*')"
+          if [ -n "$left" ]; then echo "$left"; exit 1; fi
+      - name: Terminal.app profiles removed
+        if: runner.os == 'macOS'
+        run: test "$(defaults export com.apple.Terminal - | plutil -extract 'Window Settings' raw -o - - | grep -c '^Harmonia ' || true)" = 0
+      - name: Unknown variant fails
+        run: "! ./install.sh harmonia-nope"
+
+  windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        shell: [pwsh, powershell]
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
+    steps:
+      - uses: actions/checkout@v5
+      - run: New-Item -ItemType Directory -Path "$HOME\.config\herdr-app" -Force | Out-Null
+      - run: .\install.ps1 -Variant harmonia-aurora
+      - name: Files installed
+        run: |
+          $files = @(
+            "$env:LOCALAPPDATA\Microsoft\Windows Terminal\Fragments\Harmonia\harmonia.json",
+            "$HOME\.config\harmonia\harmonia.ps1",
+            "$HOME\.config\harmonia\harmonia.format.ps1xml",
+            "$HOME\.config\harmonia\harmonia.omp.json"
+          ) + (Get-ChildItem dist\herdr -Filter *.json | ForEach-Object { "$HOME\.config\herdr-app\themes\$($_.Name)" })
+          $missing = $files | Where-Object { -not (Test-Path $_) }
+          if ($missing) { $missing; exit 1 }
+          $installed = Get-FileHash "$HOME\.config\harmonia\harmonia.ps1"
+          if ($installed.Hash -ne (Get-FileHash dist\powershell\harmonia-aurora.ps1).Hash) { 'harmonia.ps1 is not the aurora variant'; exit 1 }
+      - name: Profile script loads
+        run: . "$HOME\.config\harmonia\harmonia.ps1"
+      - name: Unknown variant fails
+        run: |
+          try { .\install.ps1 -Variant harmonia-nope; exit 1 } catch { 'failed as expected' }
+      - run: .\uninstall.ps1
+      - name: Files removed
+        run: |
+          $left = @(
+            "$env:LOCALAPPDATA\Microsoft\Windows Terminal\Fragments\Harmonia",
+            "$HOME\.config\harmonia"
+          ) + (Get-ChildItem "$HOME\.config\herdr-app\themes" -Filter 'harmonia-*' | ForEach-Object FullName)
+          $left = $left | Where-Object { Test-Path $_ }
+          if ($left) { $left; exit 1 }

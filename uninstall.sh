@@ -10,7 +10,8 @@ os="$(uname -s)"
 failures=0
 repo_tmp=""
 presets_tmp=""
-trap 'rm -rf "$repo_tmp" "$presets_tmp"' EXIT
+terminal_tmp=""
+trap 'rm -rf "$repo_tmp" "$presets_tmp" "$terminal_tmp"' EXIT
 
 if [ -t 1 ]; then green=$'\033[32m' yellow=$'\033[33m' red=$'\033[31m' reset=$'\033[0m'
 else green='' yellow='' red='' reset=''
@@ -25,10 +26,16 @@ if [ "$os" != Darwin ] && [ "$os" != Linux ]; then
   exit 1
 fi
 if [ ! -d "$dist/ghostty" ]; then
-  # Run without a clone (curl ... | bash): fetch the repo into a temporary folder
+  # Run without a clone (curl ... | bash): fetch the latest release into a temporary folder
   repo_tmp="$(mktemp -d)"
-  echo "Downloading Harmonia from GitHub..."
-  curl -fsSL https://github.com/AgusRdz/harmonia-terminal/archive/refs/heads/main.tar.gz | tar -xz -C "$repo_tmp" --strip-components=1
+  tag="$(curl -fsSLI -o /dev/null -w '%{url_effective}' https://github.com/AgusRdz/harmonia-terminal/releases/latest)"
+  tag="${tag##*/}"
+  case "$tag" in
+    v*) ;;
+    *) echo "No Harmonia release found on GitHub." >&2; exit 1 ;;
+  esac
+  echo "Downloading Harmonia $tag from GitHub..."
+  curl -fsSL "https://github.com/AgusRdz/harmonia-terminal/archive/refs/tags/$tag.tar.gz" | tar -xz -C "$repo_tmp" --strip-components=1
   dist="$repo_tmp/dist"
 fi
 
@@ -97,6 +104,38 @@ if [ "$os" = Darwin ] && defaults read com.googlecode.iterm2 "Custom Color Prese
   fi
 else
   skip "not installed"
+fi
+
+echo "Terminal.app"
+if [ "$os" = Darwin ]; then
+  terminal_tmp="$(mktemp)"
+  defaults export com.apple.Terminal "$terminal_tmp"
+  count=0
+  for file in "$dist/terminal-app"/*.terminal; do
+    profile="$(plutil -extract name raw -o - "$file")"
+    if plutil -extract "Window Settings" raw -o - "$terminal_tmp" | grep -q -x "$profile"; then
+      plutil -remove "Window Settings.$profile" "$terminal_tmp"
+      count=$((count + 1))
+    fi
+  done
+  if [ "$count" -eq 0 ]; then
+    skip "no Harmonia profiles"
+  else
+    defaults write com.apple.Terminal "Window Settings" \
+      "$(plutil -extract "Window Settings" xml1 -o - "$terminal_tmp" | sed '1,3d;$d')"
+    if defaults export com.apple.Terminal - | plutil -extract "Window Settings" raw -o - - | grep -q '^Harmonia '; then
+      fail "Harmonia profiles still in Terminal.app"
+    else
+      ok "removed $count profiles"
+    fi
+  fi
+  for key in "Default Window Settings" "Startup Window Settings"; do
+    case "$(defaults read com.apple.Terminal "$key" 2>/dev/null || true)" in
+      Harmonia*) todo "$key is still a Harmonia profile; pick another in Settings > Profiles (Default) and Settings > General" ;;
+    esac
+  done
+else
+  skip "macOS only"
 fi
 
 echo "WezTerm"
