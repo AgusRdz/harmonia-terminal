@@ -30,19 +30,27 @@ The PowerShell scripts work in PowerShell 7 and Windows PowerShell 5.1; settings
 
 ## Install
 
-Without cloning, run the install script straight from GitHub. It downloads the repo into a temporary folder, installs from there, and deletes it. The variant at the end is optional.
+Without cloning, run the install script straight from GitHub. It downloads the repo into a temporary folder, installs from there, and deletes it.
+
+Every run installs all nine variants. The variant you pass only matters where a single variant has to be active (see [Windows](#windows) and [macOS and Linux](#macos-and-linux)); without one, `harmonia-dark` is used.
 
 ```sh
-# macOS and Linux
-curl -fsSL https://raw.githubusercontent.com/AgusRdz/harmonia-terminal/main/install.sh | bash -s -- harmonia-dark
+# macOS and Linux: all nine variants, instructions for harmonia-dark
+curl -fsSL https://raw.githubusercontent.com/AgusRdz/harmonia-terminal/main/install.sh | bash
+
+# Same, with the instructions for another variant
+curl -fsSL https://raw.githubusercontent.com/AgusRdz/harmonia-terminal/main/install.sh | bash -s -- harmonia-aurora
 ```
 
 ```powershell
-# Windows
-& ([scriptblock]::Create((irm https://raw.githubusercontent.com/AgusRdz/harmonia-terminal/main/install.ps1))) -Variant harmonia-dark
+# Windows: all nine Windows Terminal and Herdr schemes, PowerShell colors for harmonia-dark
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/AgusRdz/harmonia-terminal/main/install.ps1)))
+
+# Same, with PowerShell colors for another variant
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/AgusRdz/harmonia-terminal/main/install.ps1))) -Variant harmonia-aurora
 ```
 
-`uninstall.sh` and `uninstall.ps1` work the same way (drop the variant). Read a script before piping it into a shell; both are short. Run either again to update.
+`uninstall.sh` and `uninstall.ps1` work the same way and take no variant. Read a script before piping it into a shell; both are short. Run either again to update.
 
 To use the scripts from a clone, or to install by hand, clone the repo. The themes are already built in `dist/`, so there is nothing to compile.
 
@@ -56,10 +64,11 @@ Every terminal gets all nine variants at once, and you pick one in its settings:
 ### Windows
 
 ```powershell
-.\install.ps1 -Variant harmonia-dark
+.\install.ps1                            # PowerShell colors for harmonia-dark
+.\install.ps1 -Variant harmonia-aurora   # PowerShell colors for harmonia-aurora
 ```
 
-It copies the fragment to `%LOCALAPPDATA%\Microsoft\Windows Terminal\Fragments\Harmonia\`, copies the chosen script to `~\.config\harmonia\harmonia.ps1` and its format file to `harmonia.format.ps1xml` beside it, copies the oh-my-posh theme to `~\.config\harmonia\harmonia.omp.json`, and prints the lines to add to `$PROFILE`. If `~\.config\herdr-app` exists it also copies all nine Herdr themes to its `themes\` folder. It does not edit your profile.
+Either way, Windows Terminal and Herdr get all nine schemes. `-Variant` only picks the PowerShell colors (PSReadLine, `$PSStyle`, `Get-ChildItem`), because a profile can load one at a time. It copies the fragment to `%LOCALAPPDATA%\Microsoft\Windows Terminal\Fragments\Harmonia\`, copies the chosen script to `~\.config\harmonia\harmonia.ps1` and its format file to `harmonia.format.ps1xml` beside it, copies the oh-my-posh theme to `~\.config\harmonia\harmonia.omp.json`, and prints the lines to add to `$PROFILE`. If `~\.config\herdr-app` exists it also copies all nine Herdr themes to its `themes\` folder. It does not edit your profile.
 
 ```powershell
 .\uninstall.ps1
@@ -80,10 +89,11 @@ Manual:
 ### macOS and Linux
 
 ```sh
-./install.sh harmonia-dark
+./install.sh                    # instructions for harmonia-dark
+./install.sh harmonia-aurora    # instructions for harmonia-aurora
 ```
 
-The variant is optional (default `harmonia-dark`) and only changes the instructions it prints. For each of Ghostty, iTerm2 (macOS), WezTerm, Kitty, Alacritty and Herdr that it finds, it:
+Either way, every terminal gets all nine variants. The variant only changes the `todo` lines it prints (the theme name to put in each config), so you can switch later in each terminal's config without running it again. For each of Ghostty, iTerm2 (macOS), WezTerm, Kitty, Alacritty and Herdr that it finds, it:
 
 - copies all nine themes and checks each copy against `dist/`;
 - for iTerm2, writes the nine color presets by name, so running it again updates them instead of adding copies;
