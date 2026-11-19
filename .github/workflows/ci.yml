@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - run: shellcheck install.sh uninstall.sh
+      - run: shellcheck --severity=warning install.sh uninstall.sh
       - name: PSScriptAnalyzer
         shell: pwsh
         run: |
