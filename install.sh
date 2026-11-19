@@ -64,6 +64,22 @@ install_files() {
   ok "$target: $(ls "$dist/$target"/$glob | wc -l | tr -d ' ') themes in $dest"
 }
 
+# Prints the background, foreground and 16 ANSI colors of an iTerm2 profile or preset (as JSON) rounded
+# to 3 decimals, since iTerm2 stores the same color with more digits than the preset file
+iterm_colors() {
+  local json="$1" key obj c out="Background"
+  for key in "Background Color" "Foreground Color" Ansi "Ansi 0 Color" "Ansi 1 Color" "Ansi 2 Color" "Ansi 3 Color" \
+             "Ansi 4 Color" "Ansi 5 Color" "Ansi 6 Color" "Ansi 7 Color" "Ansi 8 Color" "Ansi 9 Color" "Ansi 10 Color" \
+             "Ansi 11 Color" "Ansi 12 Color" "Ansi 13 Color" "Ansi 14 Color" "Ansi 15 Color"; do
+    if [ "$key" = Ansi ]; then out="$out Ansi"; continue; fi
+    obj="$(grep -o "\"$key\":{[^}]*}" <<< "$json" || true)"
+    for c in Red Green Blue; do
+      out="$out $(LC_NUMERIC=C printf '%.3f' "$(sed -nE "s/.*\"$c Component\":([-0-9.eE]+).*/\1/p" <<< "$obj")")"
+    done
+  done
+  echo "$out"
+}
+
 # Prints the first non-comment line of a file matching a pattern
 active_line() {
   [ -f "$1" ] && grep -v '^[[:space:]]*[#-]' "$1" | grep -m1 "$2" || true
@@ -115,7 +131,35 @@ if has_app iTerm; then
   if [ -z "$missing" ]; then ok "9 color presets in iTerm2"
   else fail "presets missing after install:$missing"
   fi
-  todo "pick '$variant' in Settings > Profiles > Colors > Color Presets (pick it again after an update; profiles keep a copy of the colors)"
+  # Profiles keep a copy of the colors, not the preset name, so the default profile is matched by its colors
+  iterm_prefs="$(defaults export com.googlecode.iterm2 -)"
+  default_guid="$(plutil -extract "Default Bookmark Guid" raw -o - - <<< "$iterm_prefs" 2>/dev/null || true)"
+  profile_json=""
+  count="$(plutil -extract "New Bookmarks" raw -o - - <<< "$iterm_prefs" 2>/dev/null || echo 0)"
+  for ((i = 0; i < count; i++)); do
+    if [ "$(plutil -extract "New Bookmarks.$i.Guid" raw -o - - <<< "$iterm_prefs")" = "$default_guid" ]; then
+      profile_json="$(plutil -extract "New Bookmarks.$i" json -o - - <<< "$iterm_prefs" 2>/dev/null || true)"
+    fi
+  done
+  current="" stale=""
+  if [ -n "$profile_json" ]; then
+    profile_colors="$(iterm_colors "$profile_json")"
+    for file in "$dist/iterm2"/*.itermcolors; do
+      preset_colors="$(iterm_colors "$(plutil -convert json -o - "$file")")"
+      if [ "$profile_colors" = "$preset_colors" ]; then
+        current="$(basename "$file" .itermcolors)"
+      elif [ "${profile_colors%% Ansi*}" = "${preset_colors%% Ansi*}" ]; then
+        stale="$stale $(basename "$file" .itermcolors)"
+      fi
+    done
+  fi
+  if [ -n "$current" ]; then
+    ok "default profile: $current"
+  elif [ -n "$stale" ]; then
+    todo "the default profile has older Harmonia colors; pick the preset again in Settings > Profiles > Colors > Color Presets (one of:$stale)"
+  else
+    todo "pick '$variant' in Settings > Profiles > Colors > Color Presets (pick it again after an update; profiles keep a copy of the colors)"
+  fi
 else
   skip "not installed"
 fi
