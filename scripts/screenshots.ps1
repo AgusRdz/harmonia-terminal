@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
   [string]$Browser = "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\msedge.exe",
-  [string]$WindowSize = '800,335'
+  [string]$WindowSize = '800,395'
 )
 
 $ErrorActionPreference = 'Stop'
