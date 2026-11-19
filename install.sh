@@ -26,10 +26,16 @@ if [ "$os" != Darwin ] && [ "$os" != Linux ]; then
   exit 1
 fi
 if [ ! -d "$dist/ghostty" ]; then
-  # Run without a clone (curl ... | bash): fetch the repo into a temporary folder
+  # Run without a clone (curl ... | bash): fetch the latest release into a temporary folder
   repo_tmp="$(mktemp -d)"
-  echo "Downloading Harmonia from GitHub..."
-  curl -fsSL https://github.com/AgusRdz/harmonia-terminal/archive/refs/heads/main.tar.gz | tar -xz -C "$repo_tmp" --strip-components=1
+  tag="$(curl -fsSLI -o /dev/null -w '%{url_effective}' https://github.com/AgusRdz/harmonia-terminal/releases/latest)"
+  tag="${tag##*/}"
+  case "$tag" in
+    v*) ;;
+    *) echo "No Harmonia release found on GitHub." >&2; exit 1 ;;
+  esac
+  echo "Downloading Harmonia $tag from GitHub..."
+  curl -fsSL "https://github.com/AgusRdz/harmonia-terminal/archive/refs/tags/$tag.tar.gz" | tar -xz -C "$repo_tmp" --strip-components=1
   dist="$repo_tmp/dist"
 fi
 if [ ! -f "$dist/ghostty/$variant" ]; then
@@ -112,6 +118,29 @@ if has_app iTerm; then
   todo "pick '$variant' in Settings > Profiles > Colors > Color Presets (pick it again after an update; profiles keep a copy of the colors)"
 else
   skip "not installed"
+fi
+
+echo "Terminal.app"
+if [ "$os" = Darwin ]; then
+  # Same as iTerm2: written by name so reruns update the profiles; opening the .terminal files would open windows
+  missing=""
+  for file in "$dist/terminal-app"/*.terminal; do
+    profile="$(plutil -extract name raw -o - "$file")"
+    defaults write com.apple.Terminal "Window Settings" -dict-add "$profile" \
+      "$(sed -n '/^<plist/,/^<\/plist>/p' "$file" | sed '1d;$d')"
+    defaults export com.apple.Terminal - | plutil -extract "Window Settings" raw -o - - | grep -q -x "$profile" ||
+      missing="$missing $profile"
+  done
+  if [ -z "$missing" ]; then ok "9 profiles in Terminal.app"
+  else fail "profiles missing after install:$missing"
+  fi
+  default_profile="$(defaults read com.apple.Terminal "Default Window Settings" 2>/dev/null || true)"
+  case "$default_profile" in
+    Harmonia*) ok "default profile: $default_profile" ;;
+    *) todo "in Settings > Profiles select $name and click Default; quit and reopen Terminal.app if the profiles don't show" ;;
+  esac
+else
+  skip "macOS only"
 fi
 
 echo "WezTerm"

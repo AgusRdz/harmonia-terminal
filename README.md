@@ -1,6 +1,6 @@
 # harmonia-terminal
 
-Converts the [Harmonia](https://github.com/AgusRdz/harmonia-theme) VS Code theme into color schemes for Windows Terminal, Ghostty, iTerm2, WezTerm, Kitty and Alacritty, Herdr themes and PowerShell color scripts. All nine variants are generated from harmonia-theme's published theme JSON, then tuned for long terminal sessions (see [Contrast](#contrast)).
+Converts the [Harmonia](https://github.com/AgusRdz/harmonia-theme) VS Code theme into color schemes for Windows Terminal, Ghostty, iTerm2, Terminal.app, WezTerm, Kitty and Alacritty, Herdr themes and PowerShell color scripts. All nine variants are generated from harmonia-theme's published theme JSON, then tuned for long terminal sessions (see [Contrast](#contrast)).
 
 ## Variants
 
@@ -24,45 +24,46 @@ Converts the [Harmonia](https://github.com/AgusRdz/harmonia-theme) VS Code theme
 8. **WezTerm color schemes** (`dist/wezterm/harmonia-<variant>.toml`): background, foreground, cursor, selection and the 16 ANSI colors.
 9. **Kitty themes** (`dist/kitty/harmonia-<variant>.conf`): background, foreground, cursor, selection and the 16 ANSI colors.
 10. **Alacritty themes** (`dist/alacritty/harmonia-<variant>.toml`): background, foreground, cursor, selection and the 16 ANSI colors.
-11. **oh-my-posh prompt** (`oh-my-posh/harmonia.omp.json`): user, path, git branch, and exit code on failure. It uses ANSI color names instead of hex, so it follows whichever Harmonia scheme Windows Terminal is using; one file covers every variant. Segment text is drawn in the terminal background color (`transparent`), so its contrast equals the segment color's contrast against the background, which the ANSI rules below keep at 4.5:1 or more.
+11. **Terminal.app profiles** (`dist/terminal-app/harmonia-<variant>.terminal`): background, foreground, bold text, cursor, selection and the 16 ANSI colors, stored in sRGB. Fonts and window size are left to your existing profile settings.
+12. **oh-my-posh prompt** (`oh-my-posh/harmonia.omp.json`): user, path, git branch, and exit code on failure. It uses ANSI color names instead of hex, so it follows whichever Harmonia scheme Windows Terminal is using; one file covers every variant. Segment text is drawn in the terminal background color (`transparent`), so its contrast equals the segment color's contrast against the background, which the ANSI rules below keep at 4.5:1 or more.
 
 The PowerShell scripts work in PowerShell 7 and Windows PowerShell 5.1; settings the running version does not support are skipped.
 
 ## Install
 
-Without cloning, run the install script straight from GitHub. It downloads the repo into a temporary folder, installs from there, and deletes it.
+Without cloning, run the install script from the latest [release](https://github.com/AgusRdz/harmonia-terminal/releases). It downloads that release into a temporary folder, installs from there, and deletes it.
 
 Every run installs all nine variants. The variant you pass only matters where a single variant has to be active (see [Windows](#windows) and [macOS and Linux](#macos-and-linux)); without one, `harmonia-dark` is used.
 
 ```sh
 # macOS and Linux: all nine variants, instructions for harmonia-dark
-curl -fsSL https://raw.githubusercontent.com/AgusRdz/harmonia-terminal/main/install.sh | bash
+curl -fsSL https://github.com/AgusRdz/harmonia-terminal/releases/latest/download/install.sh | bash
 
 # Same, with the instructions for another variant
-curl -fsSL https://raw.githubusercontent.com/AgusRdz/harmonia-terminal/main/install.sh | bash -s -- harmonia-aurora
+curl -fsSL https://github.com/AgusRdz/harmonia-terminal/releases/latest/download/install.sh | bash -s -- harmonia-aurora
 ```
 
 ```powershell
 # Windows: all nine Windows Terminal and Herdr schemes, PowerShell colors for harmonia-dark
-& ([scriptblock]::Create((irm https://raw.githubusercontent.com/AgusRdz/harmonia-terminal/main/install.ps1)))
+& ([scriptblock]::Create((irm https://github.com/AgusRdz/harmonia-terminal/releases/latest/download/install.ps1)))
 
 # Same, with PowerShell colors for another variant
-& ([scriptblock]::Create((irm https://raw.githubusercontent.com/AgusRdz/harmonia-terminal/main/install.ps1))) -Variant harmonia-aurora
+& ([scriptblock]::Create((irm https://github.com/AgusRdz/harmonia-terminal/releases/latest/download/install.ps1))) -Variant harmonia-aurora
 ```
 
 To uninstall without a clone (no variant needed):
 
 ```sh
 # macOS and Linux
-curl -fsSL https://raw.githubusercontent.com/AgusRdz/harmonia-terminal/main/uninstall.sh | bash
+curl -fsSL https://github.com/AgusRdz/harmonia-terminal/releases/latest/download/uninstall.sh | bash
 ```
 
 ```powershell
 # Windows
-& ([scriptblock]::Create((irm https://raw.githubusercontent.com/AgusRdz/harmonia-terminal/main/uninstall.ps1)))
+& ([scriptblock]::Create((irm https://github.com/AgusRdz/harmonia-terminal/releases/latest/download/uninstall.ps1)))
 ```
 
-Read a script before piping it into a shell; they are short. Run the install command again to update.
+Read a script before piping it into a shell; they are short. Run the install command again to update to the latest release.
 
 To use the scripts from a clone, or to install by hand, clone the repo. The themes are already built in `dist/`, so there is nothing to compile.
 
@@ -71,7 +72,7 @@ git clone https://github.com/AgusRdz/harmonia-terminal.git
 cd harmonia-terminal
 ```
 
-Every terminal gets all nine variants at once, and you pick one in its settings: `harmonia-dark`, `harmonia-light`, `harmonia-aurora`, `harmonia-daybreak`, `harmonia-moonlit`, `harmonia-paper-white`, `harmonia-noir`, `harmonia-dark-high-contrast`, `harmonia-oled-true-black`. WezTerm and Kitty list them by display name (`Harmonia Dark`). The PowerShell colors are the exception: they hold one variant at a time.
+Every terminal gets all nine variants at once, and you pick one in its settings: `harmonia-dark`, `harmonia-light`, `harmonia-aurora`, `harmonia-daybreak`, `harmonia-moonlit`, `harmonia-paper-white`, `harmonia-noir`, `harmonia-dark-high-contrast`, `harmonia-oled-true-black`. WezTerm, Kitty and Terminal.app list them by display name (`Harmonia Dark`). The PowerShell colors are the exception: they hold one variant at a time.
 
 ### Windows
 
@@ -105,10 +106,10 @@ Manual:
 ./install.sh harmonia-aurora    # instructions for harmonia-aurora
 ```
 
-Either way, every terminal gets all nine variants. The variant only changes the `todo` lines it prints (the theme name to put in each config), so you can switch later in each terminal's config without running it again. For each of Ghostty, iTerm2 (macOS), WezTerm, Kitty, Alacritty and Herdr that it finds, it:
+Either way, every terminal gets all nine variants. The variant only changes the `todo` lines it prints (the theme name to put in each config), so you can switch later in each terminal's config without running it again. For each of Ghostty, iTerm2 (macOS), Terminal.app (macOS), WezTerm, Kitty, Alacritty and Herdr that it finds, it:
 
 - copies all nine themes and checks each copy against `dist/`;
-- for iTerm2, writes the nine color presets by name, so running it again updates them instead of adding copies;
+- for iTerm2 and Terminal.app, writes the nine color presets or profiles by name, so running it again updates them instead of adding copies;
 - for Kitty, refreshes `current-theme.conf` if `kitten themes` saved a Harmonia theme there;
 - for Ghostty, runs `ghostty +validate-config`;
 - reports `ok` when the terminal's config already uses Harmonia, or `todo` with the exact line to add. It does not edit your config files.
@@ -119,7 +120,7 @@ Run it again after pulling an update, then reload each terminal. It exits with a
 ./uninstall.sh
 ```
 
-It removes only the files this repo ships and every `harmonia-*` iTerm2 preset, then lists the config lines that still point at Harmonia so you can change them.
+It removes only the files this repo ships, every `harmonia-*` iTerm2 preset and the nine Terminal.app profiles, then lists the config lines that still point at Harmonia so you can change them.
 
 Manual:
 
@@ -142,6 +143,7 @@ Then select a variant and reload:
 | WezTerm | `config.color_scheme = 'Harmonia Dark'` in `~/.wezterm.lua` | `Cmd+R`, or reopen |
 | Kitty | `kitten themes`, User category. It saves a copy in `current-theme.conf`, so run it again after an update. Or `include themes/harmonia-dark.conf` in `kitty.conf`. | `Ctrl+Cmd+,` |
 | Alacritty | `import = ["~/.config/alacritty/themes/harmonia-dark.toml"]` under `[general]` in `~/.config/alacritty/alacritty.toml` | Reopen |
+| Terminal.app | `open dist/terminal-app/harmonia-dark.terminal` imports it and opens a window; then select it in Settings > Profiles and click Default | Open a new window |
 | Herdr | A `harmonia-*` theme in its Settings | |
 
 ### Check
@@ -164,7 +166,7 @@ Every variant follows the same three-tier hierarchy, measured with WCAG contrast
 
 Colors that miss their tier are moved along OKLCH lightness, keeping their hue, so a few accents in the light variants are darker than in the editor. `npm run build` fails if any generated foreground drops below 4.5:1.
 
-The 16 ANSI colors follow the same rule against the background. Bright black is the usual dim text color (autosuggestions, comments), so it sits in the quiet tier. The other chromatic colors are also used as fills (prompt segments), so they only need AA, not 7:1. No color, bright white included, has more contrast than normal text, so bright colors never glare above the foreground. Black and white are left as designed, and the selection background is moved if the foreground would fall below 4.5:1 on it. The Ghostty, iTerm2, WezTerm, Kitty and Alacritty themes use the same adjusted palette. Herdr's `muted` and `dim` use the quiet tier; its accent and agent status colors, which render as text, use the accent tier.
+The 16 ANSI colors follow the same rule against the background. Bright black is the usual dim text color (autosuggestions, comments), so it sits in the quiet tier. The other chromatic colors are also used as fills (prompt segments), so they only need AA, not 7:1. No color, bright white included, has more contrast than normal text, so bright colors never glare above the foreground. Black and white are left as designed, and the selection background is moved if the foreground would fall below 4.5:1 on it. The Ghostty, iTerm2, Terminal.app, WezTerm, Kitty and Alacritty themes use the same adjusted palette. Herdr's `muted` and `dim` use the quiet tier; its accent and agent status colors, which render as text, use the accent tier.
 
 ## Troubleshooting
 
@@ -182,3 +184,16 @@ npm run preview
 ```
 
 `npm run preview` writes `docs/preview.html` with every variant side by side; `scripts/screenshots.ps1` captures one image per variant into `docs/images/` using headless Edge. The `dist/` output is committed.
+
+CI fails a push or pull request if `dist/` or `docs/preview.html` is out of date, if a generated color drops below 4.5:1, if `shellcheck` or PSScriptAnalyzer report errors, or if the install and uninstall scripts fail on Windows (PowerShell 7 and 5.1), macOS or Linux.
+
+## Release
+
+The no-clone install commands use the latest GitHub release, so changes on `main` reach users only when you release. Bump `version` in `package.json`, commit, then tag and push:
+
+```sh
+git tag v1.1.0
+git push origin v1.1.0
+```
+
+The release workflow creates the GitHub release with generated notes and attaches the four install and uninstall scripts.

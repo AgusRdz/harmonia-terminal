@@ -5,18 +5,19 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-# Run without a clone (irm ...): fetch the repo into a temporary folder
+# Run without a clone (irm ...): fetch the latest release into a temporary folder
 $root = $PSScriptRoot
 $repoTmp = $null
 if (-not $root -or -not (Test-Path (Join-Path $root 'dist'))) {
+  $tag = (Invoke-RestMethod -Uri 'https://api.github.com/repos/AgusRdz/harmonia-terminal/releases/latest' -UseBasicParsing).tag_name
   $repoTmp = Join-Path ([IO.Path]::GetTempPath()) "harmonia-$([guid]::NewGuid())"
   New-Item -ItemType Directory -Path $repoTmp | Out-Null
-  Write-Host 'Downloading Harmonia from GitHub...'
+  Write-Host "Downloading Harmonia $tag from GitHub..."
   $zip = Join-Path $repoTmp 'harmonia.zip'
   $ProgressPreference = 'SilentlyContinue'
-  Invoke-WebRequest -Uri 'https://github.com/AgusRdz/harmonia-terminal/archive/refs/heads/main.zip' -OutFile $zip -UseBasicParsing
+  Invoke-WebRequest -Uri "https://github.com/AgusRdz/harmonia-terminal/archive/refs/tags/$tag.zip" -OutFile $zip -UseBasicParsing
   Expand-Archive -Path $zip -DestinationPath $repoTmp
-  $root = Join-Path $repoTmp 'harmonia-terminal-main'
+  $root = (Get-ChildItem -Path $repoTmp -Directory)[0].FullName
 }
 
 $powershellDir = Join-Path $root 'dist\powershell'
