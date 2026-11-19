@@ -50,7 +50,18 @@ curl -fsSL https://raw.githubusercontent.com/AgusRdz/harmonia-terminal/main/inst
 & ([scriptblock]::Create((irm https://raw.githubusercontent.com/AgusRdz/harmonia-terminal/main/install.ps1))) -Variant harmonia-aurora
 ```
 
-`uninstall.sh` and `uninstall.ps1` work the same way and take no variant. Read a script before piping it into a shell; both are short. Run either again to update.
+To uninstall without a clone (no variant needed):
+
+```sh
+# macOS and Linux
+curl -fsSL https://raw.githubusercontent.com/AgusRdz/harmonia-terminal/main/uninstall.sh | bash
+```
+
+```powershell
+# Windows
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/AgusRdz/harmonia-terminal/main/uninstall.ps1)))
+```
+ Read a script before piping it into a shell; both are short. Run either again to update.
 
 To use the scripts from a clone, or to install by hand, clone the repo. The themes are already built in `dist/`, so there is nothing to compile.
 
