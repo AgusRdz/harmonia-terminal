@@ -61,7 +61,8 @@ curl -fsSL https://raw.githubusercontent.com/AgusRdz/harmonia-terminal/main/unin
 # Windows
 & ([scriptblock]::Create((irm https://raw.githubusercontent.com/AgusRdz/harmonia-terminal/main/uninstall.ps1)))
 ```
- Read a script before piping it into a shell; both are short. Run either again to update.
+
+Read a script before piping it into a shell; they are short. Run the install command again to update.
 
 To use the scripts from a clone, or to install by hand, clone the repo. The themes are already built in `dist/`, so there is nothing to compile.
 
