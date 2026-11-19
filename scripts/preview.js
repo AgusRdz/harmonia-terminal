@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import { loadThemes, color, toHex } from '../src/theme.js'
 import { formatPalette } from '../src/targets/powershell-format.js'
+import { terminalPalette } from '../src/palette.js'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const dist = join(root, 'dist', 'powershell')
@@ -54,12 +55,18 @@ function section(theme) {
     span(c('Member'), 'Length'), ' ', span(c('Operator'), '-gt'), ' ', span(c('Number'), '1024'), ' ', span(c('Operator'), '}'), ' ',
     span(c('Comment'), '# large files'), span(c('InlinePrediction'), ' | Select -First 5')
   ].join('')
+  // Same layout as the README's printf check, so the two can be compared side by side
+  const ansi = terminalPalette(theme).ansi.map(toHex)
+  const ansiRow = (from) => ansi.slice(from, from + 8).map((hex, i) => span(hex, String(from + i).padStart(3))).join(' ')
 
   return `<section id="${theme.slug}" style="background:${bg};color:${fg}">
 <h2>${esc(theme.name)}</h2>
 <pre>${lines.join('\n')}
 
-${span(fg, 'PS> ')}${typed}</pre>
+${span(fg, 'PS> ')}${typed}
+
+${ansiRow(0)}
+${ansiRow(8)}</pre>
 </section>`
 }
 
